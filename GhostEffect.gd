@@ -4,9 +4,11 @@ var _timer:float
 var _max_timer:float
 
 # ゴーストエフェクト開始
-func start(_position:Vector2, _scale:Vector2, _frame:int, _flip_h:bool):
+func start(_position:Vector2, _scale:Vector2, _frame:int, _flip_h:bool, rot:float, ofs:Vector2):
 	position = _position
+	offset = ofs
 	scale = _scale
+	rotation = rot
 	frame = _frame
 	flip_h = _flip_h
 	_timer = 0.5

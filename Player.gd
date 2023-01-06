@@ -10,6 +10,8 @@ const JUMP_SCALE_TIME := 0.2
 const JUMP_SCALE_VAL_JUMP := 0.3
 const JUMP_SCALE_VAL_LANDING := 0.25
 
+const JUMP_CNT_MAX = 2 # 2段ジャンプまで可能.
+
 # 状態
 enum eState {
 	IDLE,
@@ -24,6 +26,9 @@ enum eJumpScale {
 	LANDING, # 着地開始
 }
 
+onready var _spr_normal = $Sprite
+onready var _spr_frontflip = $SpriteFrontFlip
+
 onready var _spr = $Sprite
 
 # 移動量
@@ -36,6 +41,7 @@ var jump_scale = eJumpScale.NONE
 var jump_scale_timer = 0
 var is_left = false # 左を向いているかどうか
 var ghost_cnt = 0.0
+var jump_cnt = 0
 
 # ゴーストエフェクトを表示する CanvasLayer
 onready var _ghost_effects = $"../GhostEffectLayer"
@@ -71,8 +77,8 @@ func _physics_process(delta: float) -> void:
 
 # ジャンプ判定
 func _update_jump() -> void:
-	if state == eState.JUMP:
-		return # ジャンプ中はジャンプできない
+	if jump_cnt >= JUMP_CNT_MAX:
+		return # ジャンプ回数の限度を超えた.
 
 	# Spaceキーでジャンプ開始
 	if Input.is_action_just_pressed("ui_accept"):
@@ -82,7 +88,9 @@ func _update_jump() -> void:
 		jump_scale_timer = JUMP_SCALE_TIME
 		
 		# ジャンプパーティクル出現.
-		_add_particle(false)
+		_add_particle(jump_cnt > 0)
+		
+		jump_cnt += 1
 
 # 左右移動判定
 func _move_horizontal(delta:float) -> void:
@@ -125,6 +133,7 @@ func _update_landing(delta:float) -> void:
 			jump_scale = eJumpScale.LANDING
 			jump_scale_timer = JUMP_SCALE_TIME
 			_add_particle(true)
+			jump_cnt = 0
 	else:
 		state = eState.JUMP
 
@@ -140,7 +149,10 @@ func _proc_ghost_effect(delta:float) -> void:
 		ghost_cnt = 0
 		# 残像エフェクト生成
 		var eft = GHOST_EFFECT.instance()
-		eft.start(position, _spr.scale, _spr.frame, _spr.flip_h)
+		var pos = position
+		if jump_cnt >= JUMP_CNT_MAX:
+			pos += Vector2(0, -28)
+		eft.start(pos, _spr.scale, _spr.frame, _spr.flip_h, _spr.rotation, _spr.offset)
 		_ghost_effects.add_child(eft)
 	
 
@@ -165,6 +177,22 @@ func _get_anim_frame() -> int:
 
 # ジャンプ・着地によるスケールアニメーションの更新
 func _update_jump_scale_anim(delta:float) -> void:
+	_spr.visible = false
+	if jump_cnt >= JUMP_CNT_MAX:
+		# 2段ジャンプ時はスケールしない.
+		jump_scale_timer = 0
+		jump_scale = eJumpScale.NONE
+		# 前転用スプライトに差し替え.
+		_spr = _spr_frontflip
+		_spr.visible = true
+		if is_left:
+			delta *= -1
+		_spr.rotation_degrees += 2000 * delta
+		return
+	
+	# もとに戻す.
+	_spr = _spr_normal	
+	_spr.visible = true
 	jump_scale_timer -= delta
 	if jump_scale_timer <= 0:
 		# 演出終了
