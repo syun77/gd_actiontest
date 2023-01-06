@@ -28,6 +28,6 @@ shader_param/is_mono = true
 [node name="GhostEffect" type="Sprite"]
 material = SubResource( 2 )
 texture = ExtResource( 1 )
-offset = Vector2( 0, -32 )
+offset = Vector2( 0, -28 )
 hframes = 8
 script = ExtResource( 2 )
