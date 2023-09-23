@@ -1,13 +1,13 @@
 extends Node2D
 
-onready var _player = $Player
-onready var _particle_layer = $ParticleLayer
+@onready var _player = $Player
+@onready var _particle_layer = $ParticleLayer
 
-onready var _hslider_fps = $HSliderFPS
-onready var _label_fps = $HSliderFPS/Label
-onready var _checkbox_ghost = $CheckBoxGhost
-onready var _checkbox_ghost_mono = $CheckBoxGhostMono
-onready var _checkbox_particle = $CheckBoxParticle
+@onready var _hslider_fps = $HSliderFPS
+@onready var _label_fps = $HSliderFPS/Label
+@onready var _checkbox_ghost = $CheckBoxGhost
+@onready var _checkbox_ghost_mono = $CheckBoxGhostMono
+@onready var _checkbox_particle = $CheckBoxParticle
 
 var _ui_list = []
 
@@ -34,6 +34,6 @@ func _process(delta: float) -> void:
 	_label_fps.text = "%dFPS"%fps
 	Engine.set_time_scale(fps/60.0)
 	
-	Common.is_ghost = _checkbox_ghost.pressed
-	Common.is_ghost_mono = _checkbox_ghost_mono.pressed
-	Common.is_particle = _checkbox_particle.pressed
+	Common.is_ghost = _checkbox_ghost.button_pressed
+	Common.is_ghost_mono = _checkbox_ghost_mono.button_pressed
+	Common.is_particle = _checkbox_particle.button_pressed

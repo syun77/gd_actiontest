@@ -1,4 +1,4 @@
-extends KinematicBody2D
+extends CharacterBody2D
 
 const GHOST_EFFECT = preload("res://GhostEffect.tscn")
 
@@ -26,13 +26,10 @@ enum eJumpScale {
 	LANDING, # 着地開始
 }
 
-onready var _spr_normal = $Sprite
-onready var _spr_frontflip = $SpriteFrontFlip
+@onready var _spr_normal = $Sprite
+@onready var _spr_frontflip = $SpriteFrontFlip
 
-onready var _spr = $Sprite
-
-# 移動量
-var velocity = Vector2()
+@onready var _spr = $Sprite
 
 var pressed_move_key = false
 var anim_time = 0
@@ -44,7 +41,7 @@ var ghost_cnt = 0.0
 var jump_cnt = 0
 
 # ゴーストエフェクトを表示する CanvasLayer
-onready var _ghost_effects = $"../GhostEffectLayer"
+@onready var _ghost_effects = $"../GhostEffectLayer"
 
 func is_idle() -> bool:
 	return state == eState.IDLE
@@ -122,7 +119,7 @@ func _move_horizontal(delta:float) -> void:
 # 重力と着地を処理する
 func _update_landing(delta:float) -> void:
 	velocity.y += GRAVITY * delta
-	velocity = move_and_slide(velocity, Vector2.UP)
+	move_and_slide()
 	#position += velocity
 	if is_on_floor():
 		# 床に着地
@@ -148,7 +145,7 @@ func _proc_ghost_effect(delta:float) -> void:
 	if ghost_cnt > 4 and Common.is_ghost:
 		ghost_cnt = 0
 		# 残像エフェクト生成
-		var eft = GHOST_EFFECT.instance()
+		var eft = GHOST_EFFECT.instantiate()
 		var pos = position
 		if jump_cnt >= JUMP_CNT_MAX:
 			pos += Vector2(0, -28)
@@ -215,19 +212,19 @@ func _update_jump_scale_anim(delta:float) -> void:
 
 func _add_particle(is_gravity:bool, is_move:bool=false) -> void:
 	for i in range(32):
-		var ofs = Vector2(rand_range(-24, 24), rand_range(-12, 0))
-		var speed = rand_range(10, 50)
-		var deg = rand_range(45, 135)
-		var rad = deg2rad(deg)
+		var ofs = Vector2(randf_range(-24, 24), randf_range(-12, 0))
+		var speed = randf_range(10, 50)
+		var deg = randf_range(45, 135)
+		var rad = deg_to_rad(deg)
 		var v = Vector2(
 			cos(rad) * speed, -sin(rad) * speed
 		)
 		if is_move:
 			v.x += sign(velocity.x) * -50 # 移動方向と逆.
 		else:
-			v.x += rand_range(0, 100) * sign(ofs.x)
-		var sc = rand_range(0.5, 1.0)
-		var t = rand_range(0.01, 0.5)
+			v.x += randf_range(0, 100) * sign(ofs.x)
+		var sc = randf_range(0.5, 1.0)
+		var t = randf_range(0.01, 0.5)
 		Common.add_particle(position + ofs, v, sc, t, is_gravity)
 
 func approach(a:float, b:float, step:float) -> float:

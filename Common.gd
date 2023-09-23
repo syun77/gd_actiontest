@@ -11,7 +11,7 @@ var layer_particle:CanvasLayer
 func add_particle(pos:Vector2, vec:Vector2, sc:float, t:float, is_gravity:bool)-> Particle:
 	if is_particle == false:
 		return null
-	var p = PARTICLE_OBJ.instance()
+	var p = PARTICLE_OBJ.instantiate()
 	layer_particle.add_child(p)
 	p.start(pos, vec, sc, t, is_gravity)
 	return p
