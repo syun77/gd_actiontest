@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dw0xg8yl7ehxb"]
 
 [ext_resource type="Texture2D" uid="uid://bo62pod654c1u" path="res://player.png" id="1"]
-[ext_resource type="Script" path="res://GhostEffect.gd" id="2"]
+[ext_resource type="Script" uid="uid://3e6ypgvbtqpv" path="res://GhostEffect.gd" id="2"]
 
 [sub_resource type="Shader" id="1"]
 code = "// CanvasItemのシェーダーであることを宣言
