@@ -37,4 +37,3 @@ func _process(delta: float) -> void:
 	var rate = _timer / _max_timer
 	scale = _max_scale * rate
 	modulate.a = rate
-
